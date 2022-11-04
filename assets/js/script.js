@@ -1,22 +1,49 @@
 const descricaoTarefa = document.querySelector('#tarefa');
 const dataTarefa = document.querySelector('#data');
 const form = document.querySelector('#form');
-const listaTarefas = [];
+let listaTarefas = [];
 
 function limparFormulario() {
     dataTarefa.value = '';
     descricaoTarefa.value = '';
 }
 
-form.addEventListener('submit', function(event) {
+const tarefasToLocalStorage = () => {
+    localStorage .setItem("tarefas", JSON.stringify(listaTarefas));     
+}
+
+const result = document.querySelector('#result');
+
+const resultToTable = () => {
+    result.innerHTML = "";
+    listaTarefas.forEach(tarefa => {
+        const linha =  document.createElement('tr');
+        const colunaDescricao =  document.createElement('td');
+        colunaDescricao.innerHTML = tarefa.descricao;
+        const colunaData = document.createElement('td');
+        colunaData.innerHTML = tarefa.data;
+        linha.appendChild(colunaDescricao);
+        linha.appendChild(colunaData);
+        result.appendChild(linha);
+    })
+}
+
+const tarefasFromLocalStorage = () => {
+     listaTarefas = JSON.parse(localStorage.getItem("tarefas"));
+}
+
+form.addEventListener('submit', (event) => {
     event.preventDefault();
 
     const tarefa = {
         descricao: descricaoTarefa.value,
-        data: dataTarefa.value,
+        data: new Date(dataTarefa.value),
         realizado: false,
     }
 
-    listaTarefas.push(tarefa);
-    limparFormulario();
+    listaTarefas.push(tarefa)
+    limparFormulario()
+    tarefasToLocalStorage()
+    tarefasFromLocalStorage()
+    resultToTable()
 });
